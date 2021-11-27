@@ -57,5 +57,65 @@ const updateDoctor = async (req, res) => {
     }
 }
 
-module.exports = { createDoctor, getAllDoctors, getDoctor, updateDoctor }
+const updateFavorite = async (req, res) => {
+    const doctorId = req.params.id
+    const favorite = req.body.favorite
+    try{
+        const rowsUpdated = await Doctor.update({ favorite }, { where: { id: doctorId }});
+        if(rowsUpdated && rowsUpdated[0] > 0) {
+            res.status(200).send({ message: `${rowsUpdated[0]} médico(s) com informação de favorito atualizada com sucesso` })
+        } else {
+            res.status(404).send({ message: `Médico com id ${doctorId} não encontrado para atualizar informação de favorito`})
+        }
+    } catch (error) {
+        res.status(500).send({ message: error.message })
+    }
+}
 
+const deleteDoctor = async (req, res) => {
+    const doctorId = req.params.id
+    try{
+        const rowsDeleted = await Doctor.destroy({ where: { id: doctorId } });
+        if(rowsDeleted) {
+            res.status(200).send({message:`${rowsDeleted} médico(s) deletado(s) com sucesso` });
+        } else{
+            res.status(404).send({message: `Médico com id ${doctorId} não encontrado para deletar `});
+        }
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+}
+
+
+module.exports = { createDoctor, getAllDoctors, getDoctor, updateDoctor, updateFavorite, deleteDoctor }
+
+
+
+
+
+/*
+    const updateDoctorInDB = async ({ name, specialty, phone, crm, favorite, doctorId, clinic }) => {
+    const rowsUpdated = await Doctor.update({ name, crm, specialty, clinic, phone, favorite }, {
+        where: { id: doctorId }
+    })
+    return (rowsUpdated && rowsUpdated[0] > 0) ? true : false
+}
+
+const sendErrorMessage = error => {
+    res.status(500).send({ message: error.message })
+}
+
+const updateDoctor = async (req, res) => {
+    const doctorId = req.params.id
+    const { name, crm, specialty, clinic, phone, favorite } = req.body
+    try {
+        const doctorUpdated = await updateDoctorInDB({ name, specialty, phone, crm, favorite, doctorId, clinic })
+        doctorUpdated
+            ? res.status(200).send({ message: "Medico alterado com sucesso" })
+            : res.status(404).send({ message: "Medico nao encontrado para alterar" })
+    } catch (error) {
+        sendErrorMessage(error)
+    }
+}
+
+*/
